@@ -1,6 +1,7 @@
 # go-grpc-demo
 
 [![CI](https://github.com/gyx22-12/go-grpc-demo/actions/workflows/ci.yml/badge.svg)](https://github.com/gyx22-12/go-grpc-demo/actions/workflows/ci.yml)
+
 一个最小可运行的 Go gRPC 示例，配套 GitHub Actions CI，用于学习 gRPC（protobuf）与 CI/CD。
 
 ## 功能
