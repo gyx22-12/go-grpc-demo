@@ -1,0 +1,21 @@
+syntax = "proto3";
+
+package greeter;
+
+option go_package = "github.com/gyx22-12/go-grpc-demo/pb;pb";
+
+// Greeter 是最小可运行的 gRPC 示例服务。
+service Greeter {
+  // SayHello 一元调用：返回一条问候。
+  rpc SayHello(HelloRequest) returns (HelloReply);
+  // SayHelloStream 服务端流式：返回多条问候。
+  rpc SayHelloStream(HelloRequest) returns (stream HelloReply);
+}
+
+message HelloRequest {
+  string name = 1;
+}
+
+message HelloReply {
+  string message = 1;
+}
