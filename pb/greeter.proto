@@ -10,10 +10,12 @@ service Greeter {
   rpc SayHello(HelloRequest) returns (HelloReply);
   // SayHelloStream 服务端流式：返回多条问候。
   rpc SayHelloStream(HelloRequest) returns (stream HelloReply);
+  rpc SayHelloToMany(stream HelloRequest) returns (HelloReply); 
 }
 
 message HelloRequest {
   string name = 1;
+  int32 age = 2; 
 }
 
 message HelloReply {

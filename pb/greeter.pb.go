@@ -24,6 +24,7 @@ const (
 type HelloRequest struct {
 	state         protoimpl.MessageState `protogen:"open.v1"`
 	Name          string                 `protobuf:"bytes,1,opt,name=name,proto3" json:"name,omitempty"`
+	Age           int32                  `protobuf:"varint,2,opt,name=age,proto3" json:"age,omitempty"`
 	unknownFields protoimpl.UnknownFields
 	sizeCache     protoimpl.SizeCache
 }
@@ -63,6 +64,13 @@ func (x *HelloRequest) GetName() string {
 		return x.Name
 	}
 	return ""
+}
+
+func (x *HelloRequest) GetAge() int32 {
+	if x != nil {
+		return x.Age
+	}
+	return 0
 }
 
 type HelloReply struct {
@@ -113,15 +121,17 @@ var File_pb_greeter_proto protoreflect.FileDescriptor
 
 const file_pb_greeter_proto_rawDesc = "" +
 	"\n" +
-	"\x10pb/greeter.proto\x12\agreeter\"\"\n" +
+	"\x10pb/greeter.proto\x12\agreeter\"4\n" +
 	"\fHelloRequest\x12\x12\n" +
-	"\x04name\x18\x01 \x01(\tR\x04name\"&\n" +
+	"\x04name\x18\x01 \x01(\tR\x04name\x12\x10\n" +
+	"\x03age\x18\x02 \x01(\x05R\x03age\"&\n" +
 	"\n" +
 	"HelloReply\x12\x18\n" +
-	"\amessage\x18\x01 \x01(\tR\amessage2\x81\x01\n" +
+	"\amessage\x18\x01 \x01(\tR\amessage2\xc1\x01\n" +
 	"\aGreeter\x126\n" +
 	"\bSayHello\x12\x15.greeter.HelloRequest\x1a\x13.greeter.HelloReply\x12>\n" +
-	"\x0eSayHelloStream\x12\x15.greeter.HelloRequest\x1a\x13.greeter.HelloReply0\x01B(Z&github.com/gyx22-12/go-grpc-demo/pb;pbb\x06proto3"
+	"\x0eSayHelloStream\x12\x15.greeter.HelloRequest\x1a\x13.greeter.HelloReply0\x01\x12>\n" +
+	"\x0eSayHelloToMany\x12\x15.greeter.HelloRequest\x1a\x13.greeter.HelloReply(\x01B(Z&github.com/gyx22-12/go-grpc-demo/pb;pbb\x06proto3"
 
 var (
 	file_pb_greeter_proto_rawDescOnce sync.Once
@@ -143,10 +153,12 @@ var file_pb_greeter_proto_goTypes = []any{
 var file_pb_greeter_proto_depIdxs = []int32{
 	0, // 0: greeter.Greeter.SayHello:input_type -> greeter.HelloRequest
 	0, // 1: greeter.Greeter.SayHelloStream:input_type -> greeter.HelloRequest
-	1, // 2: greeter.Greeter.SayHello:output_type -> greeter.HelloReply
-	1, // 3: greeter.Greeter.SayHelloStream:output_type -> greeter.HelloReply
-	2, // [2:4] is the sub-list for method output_type
-	0, // [0:2] is the sub-list for method input_type
+	0, // 2: greeter.Greeter.SayHelloToMany:input_type -> greeter.HelloRequest
+	1, // 3: greeter.Greeter.SayHello:output_type -> greeter.HelloReply
+	1, // 4: greeter.Greeter.SayHelloStream:output_type -> greeter.HelloReply
+	1, // 5: greeter.Greeter.SayHelloToMany:output_type -> greeter.HelloReply
+	3, // [3:6] is the sub-list for method output_type
+	0, // [0:3] is the sub-list for method input_type
 	0, // [0:0] is the sub-list for extension type_name
 	0, // [0:0] is the sub-list for extension extendee
 	0, // [0:0] is the sub-list for field type_name

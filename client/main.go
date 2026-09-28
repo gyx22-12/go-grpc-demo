@@ -23,7 +23,7 @@ func main() {
 	defer cancel()
 
 	// 一元调用
-	resp, err := c.SayHello(ctx, &pb.HelloRequest{Name: "world"})
+	resp, err := c.SayHello(ctx, &pb.HelloRequest{Name: "world", Age: 25})
 	if err != nil {
 		log.Fatalf("SayHello: %v", err)
 	}
@@ -44,4 +44,20 @@ func main() {
 		}
 		log.Printf("stream: %s", r.GetMessage())
 	}
+
+	// 客户端流式
+	stream2, err := c.SayHelloToMany(ctx)
+	if err != nil {
+		log.Fatalf("SayHelloToMany: %v", err)
+	}
+	for _, name := range []string{"Alice", "Bob", "Carol"} {
+		if err := stream2.Send(&pb.HelloRequest{Name: name}); err != nil {
+			log.Fatalf("send: %v", err)
+		}
+	}
+	reply, err := stream2.CloseAndRecv()
+	if err != nil {
+		log.Fatalf("close: %v", err)
+	}
+	log.Printf("client-stream: %s", reply.GetMessage())
 }

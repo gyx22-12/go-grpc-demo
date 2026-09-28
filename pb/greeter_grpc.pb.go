@@ -21,6 +21,7 @@ const _ = grpc.SupportPackageIsVersion9
 const (
 	Greeter_SayHello_FullMethodName       = "/greeter.Greeter/SayHello"
 	Greeter_SayHelloStream_FullMethodName = "/greeter.Greeter/SayHelloStream"
+	Greeter_SayHelloToMany_FullMethodName = "/greeter.Greeter/SayHelloToMany"
 )
 
 // GreeterClient is the client API for Greeter service.
@@ -33,6 +34,7 @@ type GreeterClient interface {
 	SayHello(ctx context.Context, in *HelloRequest, opts ...grpc.CallOption) (*HelloReply, error)
 	// SayHelloStream 服务端流式：返回多条问候。
 	SayHelloStream(ctx context.Context, in *HelloRequest, opts ...grpc.CallOption) (grpc.ServerStreamingClient[HelloReply], error)
+	SayHelloToMany(ctx context.Context, opts ...grpc.CallOption) (grpc.ClientStreamingClient[HelloRequest, HelloReply], error)
 }
 
 type greeterClient struct {
@@ -72,6 +74,19 @@ func (c *greeterClient) SayHelloStream(ctx context.Context, in *HelloRequest, op
 // This type alias is provided for backwards compatibility with existing code that references the prior non-generic stream type by name.
 type Greeter_SayHelloStreamClient = grpc.ServerStreamingClient[HelloReply]
 
+func (c *greeterClient) SayHelloToMany(ctx context.Context, opts ...grpc.CallOption) (grpc.ClientStreamingClient[HelloRequest, HelloReply], error) {
+	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
+	stream, err := c.cc.NewStream(ctx, &Greeter_ServiceDesc.Streams[1], Greeter_SayHelloToMany_FullMethodName, cOpts...)
+	if err != nil {
+		return nil, err
+	}
+	x := &grpc.GenericClientStream[HelloRequest, HelloReply]{ClientStream: stream}
+	return x, nil
+}
+
+// This type alias is provided for backwards compatibility with existing code that references the prior non-generic stream type by name.
+type Greeter_SayHelloToManyClient = grpc.ClientStreamingClient[HelloRequest, HelloReply]
+
 // GreeterServer is the server API for Greeter service.
 // All implementations must embed UnimplementedGreeterServer
 // for forward compatibility.
@@ -82,6 +97,7 @@ type GreeterServer interface {
 	SayHello(context.Context, *HelloRequest) (*HelloReply, error)
 	// SayHelloStream 服务端流式：返回多条问候。
 	SayHelloStream(*HelloRequest, grpc.ServerStreamingServer[HelloReply]) error
+	SayHelloToMany(grpc.ClientStreamingServer[HelloRequest, HelloReply]) error
 	mustEmbedUnimplementedGreeterServer()
 }
 
@@ -97,6 +113,9 @@ func (UnimplementedGreeterServer) SayHello(context.Context, *HelloRequest) (*Hel
 }
 func (UnimplementedGreeterServer) SayHelloStream(*HelloRequest, grpc.ServerStreamingServer[HelloReply]) error {
 	return status.Error(codes.Unimplemented, "method SayHelloStream not implemented")
+}
+func (UnimplementedGreeterServer) SayHelloToMany(grpc.ClientStreamingServer[HelloRequest, HelloReply]) error {
+	return status.Error(codes.Unimplemented, "method SayHelloToMany not implemented")
 }
 func (UnimplementedGreeterServer) mustEmbedUnimplementedGreeterServer() {}
 func (UnimplementedGreeterServer) testEmbeddedByValue()                 {}
@@ -148,6 +167,13 @@ func _Greeter_SayHelloStream_Handler(srv interface{}, stream grpc.ServerStream) 
 // This type alias is provided for backwards compatibility with existing code that references the prior non-generic stream type by name.
 type Greeter_SayHelloStreamServer = grpc.ServerStreamingServer[HelloReply]
 
+func _Greeter_SayHelloToMany_Handler(srv interface{}, stream grpc.ServerStream) error {
+	return srv.(GreeterServer).SayHelloToMany(&grpc.GenericServerStream[HelloRequest, HelloReply]{ServerStream: stream})
+}
+
+// This type alias is provided for backwards compatibility with existing code that references the prior non-generic stream type by name.
+type Greeter_SayHelloToManyServer = grpc.ClientStreamingServer[HelloRequest, HelloReply]
+
 // Greeter_ServiceDesc is the grpc.ServiceDesc for Greeter service.
 // It's only intended for direct use with grpc.RegisterService,
 // and not to be introspected or modified (even as a copy)
@@ -165,6 +191,11 @@ var Greeter_ServiceDesc = grpc.ServiceDesc{
 			StreamName:    "SayHelloStream",
 			Handler:       _Greeter_SayHelloStream_Handler,
 			ServerStreams: true,
+		},
+		{
+			StreamName:    "SayHelloToMany",
+			Handler:       _Greeter_SayHelloToMany_Handler,
+			ClientStreams: true,
 		},
 	},
 	Metadata: "pb/greeter.proto",
